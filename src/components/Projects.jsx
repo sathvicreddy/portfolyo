@@ -1,41 +1,27 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import Tilt from 'react-parallax-tilt';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { ExternalLink } from 'lucide-react';
 import './Projects.css';
 
-const projectsData = [
-  {
-    id: '01',
-    title: 'Hostel Mess App',
-    category: 'ANDROID / KOTLIN',
-    description: 'A real-time Android application facilitating digital meal tokens and menu management with Firebase Cloud Messaging.',
-    tags: ['Kotlin', 'Jetpack Compose', 'Firebase', 'NoSQL'],
-    links: { source: '#', live: '#' },
-    bgImage: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?q=80&w=1000&auto=format&fit=crop'
-  },
-  {
-    id: '02',
-    title: 'Inventory System',
-    category: 'JAVA / MYSQL',
-    description: 'A comprehensive full-stack inventory suite automating supply chain workflows with high-performance JDBC bridge.',
-    tags: ['Java', 'Swing', 'JDBC', 'MySQL'],
-    links: { source: 'https://github.com/sathvicreddy', live: '#' },
-    bgImage: 'https://images.unsplash.com/photo-1586528116311-ad8ed7c1590f?q=80&w=1000&auto=format&fit=crop'
-  },
-  {
-    id: '03',
-    title: 'Customer Segmentation',
-    category: 'MACHINE LEARNING',
-    description: 'An unsupervised ML pipeline using Scikit-Learn to transform raw consumer data into behavioral clusters.',
-    tags: ['Python', 'Scikit-Learn', 'PCA', 'Matplotlib'],
-    links: { source: 'https://github.com/sathvicreddy', live: '#' },
-    bgImage: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=1000&auto=format&fit=crop'
-  }
-];
-
 const Projects = () => {
   const targetRef = useRef(null);
+  const [projectsData, setProjectsData] = useState([]);
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const res = await fetch('http://localhost:5000/api/public/projects');
+        if (res.ok) {
+          const data = await res.json();
+          setProjectsData(data);
+        }
+      } catch (err) {
+        console.error('Failed to fetch projects', err);
+      }
+    };
+    fetchProjects();
+  }, []);
   
   // Track scroll progress through the targetRef (the tall 300vh section)
   const { scrollYProgress } = useScroll({
@@ -71,33 +57,37 @@ const Projects = () => {
                 <div className="project-card">
                   <div 
                     className="project-bg" 
-                    style={{ backgroundImage: `url(${project.bgImage})` }}
+                    style={{ backgroundImage: `url(${project.image || 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?q=80&w=1000&auto=format&fit=crop'})` }}
                   ></div>
                   <div className="project-overlay"></div>
                   
                   <div className="project-content">
                     <div className="project-top">
-                      <div className="project-id">{project.id}</div>
+                      <div className="project-id">{index < 9 ? `0${index + 1}` : index + 1}</div>
                     </div>
                     
                     <div className="project-bottom">
-                      <p className="project-category mono-text">{project.category}</p>
+                      <p className="project-category mono-text">{project.category || 'PROJECT'}</p>
                       <h3 className="project-title">{project.title}</h3>
                       <p className="project-description text-dim">{project.description}</p>
                       
                       <div className="project-tags">
-                        {project.tags.map((tag, i) => (
+                        {project.tech && project.tech.map((tag, i) => (
                           <span key={i} className="tag">{tag}</span>
                         ))}
                       </div>
                       
                       <div className="project-links">
-                        <a href={project.links.source} className="project-link">
-                          SOURCE <ExternalLink size={14} />
-                        </a>
-                        <a href={project.links.live} className="project-link primary">
-                          LIVE DEMO <ExternalLink size={14} />
-                        </a>
+                        {project.githubLink && (
+                          <a href={project.githubLink} className="project-link" target="_blank" rel="noreferrer">
+                            SOURCE <ExternalLink size={14} />
+                          </a>
+                        )}
+                        {project.liveLink && (
+                          <a href={project.liveLink} className="project-link primary" target="_blank" rel="noreferrer">
+                            LIVE DEMO <ExternalLink size={14} />
+                          </a>
+                        )}
                       </div>
                     </div>
                   </div>

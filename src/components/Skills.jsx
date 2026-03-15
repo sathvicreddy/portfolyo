@@ -1,13 +1,29 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import './Skills.css';
 
-const skillsRows = [
-  ['C++', 'Java', 'Python', 'Kotlin', 'SQL'],
-  ['Scikit-Learn', 'Jetpack Compose', 'Matplotlib', 'OOP', 'DSA'],
-  ['MySQL', 'Android Studio', 'GitHub', 'JDBC', 'Jupyter']
-];
-
 const Skills = () => {
+  const [skillsRows, setSkillsRows] = useState([[], [], []]);
+
+  useEffect(() => {
+    const fetchSkills = async () => {
+      try {
+        const res = await fetch('http://localhost:5000/api/public/skills');
+        if (res.ok) {
+          const data = await res.json();
+          // Distribute skills into 3 rows for the marquee effect
+          const rows = [[], [], []];
+          data.forEach((skill, i) => {
+            rows[i % 3].push(skill.name);
+          });
+          setSkillsRows(rows);
+        }
+      } catch (err) {
+        console.error('Failed to fetch skills', err);
+      }
+    };
+    fetchSkills();
+  }, []);
+
   return (
     <section id="skills" className="skills-section section-container">
       <div className="section-header">
