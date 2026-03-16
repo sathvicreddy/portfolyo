@@ -243,7 +243,8 @@
 }
 
 .admin-form input,
-.admin-form textarea {
+.admin-form textarea,
+.admin-form select {
   width: 100%;
   padding: 0.75rem 1rem;
   border-radius: 8px;
@@ -255,13 +256,20 @@
   font-family: inherit;
 }
 
+.admin-form select option {
+  background: #0a0a1a;
+  color: #e0e0f0;
+  padding: 0.5rem;
+}
+
 .admin-form textarea {
   min-height: 100px;
   resize: vertical;
 }
 
 .admin-form input:focus,
-.admin-form textarea:focus {
+.admin-form textarea:focus,
+.admin-form select:focus {
   outline: none;
   border-color: #0ea5e9;
   box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.15);

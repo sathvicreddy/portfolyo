@@ -1,8 +1,32 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import './Hero.css';
 
 const Hero = () => {
+  const [profile, setProfile] = useState(null);
+
+  useEffect(() => {
+    fetch('http://localhost:5000/api/public/heros')
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.length > 0) {
+          setProfile(data[0]);
+        }
+      })
+      .catch(err => console.error('Failed to fetch Hero data:', err));
+  }, []);
+
+  // Helper to neatly render multiline strings saved via textarea
+  const renderText = (text, fallback) => {
+    const content = text || fallback;
+    return content.split('\n').map((line, i) => (
+      <React.Fragment key={i}>
+        {line}
+        {i !== content.split('\n').length - 1 && <br/>}
+      </React.Fragment>
+    ));
+  };
+
   return (
     <section id="home" className="hero-section section-container">
       <div className="hero-content">
@@ -12,7 +36,9 @@ const Hero = () => {
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 1, delay: 0.2 }}
         >
-          <h1 className="hero-name" style={{ fontSize: '6rem' }}>Satvic<br/>Reddy</h1>
+          <h1 className="hero-name" style={{ fontSize: '6rem' }}>
+            {renderText(profile?.heroName, 'Satvic\nReddy')}
+          </h1>
         </motion.div>
 
 
@@ -25,13 +51,13 @@ const Hero = () => {
             transition={{ duration: 0.8, delay: 0.4 }}
           >
             <div className="title-group hover-magnetic">
-              <h2 className="title-outline">ANDROID</h2>
-              <h2 className="title-outline text-dim">DEVELOPER</h2>
+              <h2 className="title-outline">{profile?.heroTitle1 || 'ANDROID'}</h2>
+              <h2 className="title-outline text-dim">{profile?.heroSubtitle1 || 'DEVELOPER'}</h2>
             </div>
             <div className="ampersand">&</div>
             <div className="title-group hover-magnetic">
-              <h2 className="title-filled">ML/AI</h2>
-              <h2 className="title-outline text-dim">ENGINEER</h2>
+              <h2 className="title-filled">{profile?.heroTitle2 || 'ML/AI'}</h2>
+              <h2 className="title-outline text-dim">{profile?.heroSubtitle2 || 'ENGINEER'}</h2>
             </div>
           </motion.div>
 
@@ -42,8 +68,7 @@ const Hero = () => {
             transition={{ duration: 1, delay: 1 }}
           >
             <p className="mono-text desc-text">
-              Crafting immersive digital experiences with<br/>
-              precision and performant code.
+              {renderText(profile?.heroDescription, 'Crafting immersive digital experiences with\nprecision and performant code.')}
             </p>
             <div className="desc-line"></div>
           </motion.div>

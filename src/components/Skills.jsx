@@ -27,14 +27,14 @@ const Skills = () => {
   return (
     <section id="skills" className="skills-section section-container">
       <div className="section-header">
-        <span className="mono-text">01 // SKILLS</span>
+        <span className="mono-text">SKILLS</span>
         <h2 className="section-title">CAPABILITIES</h2>
       </div>
 
       <div className="marquee-container">
         {skillsRows.map((row, rowIndex) => (
-          <div 
-            key={rowIndex} 
+          <div
+            key={rowIndex}
             className={`marquee-row ${rowIndex % 2 !== 0 ? 'reverse' : ''}`}
           >
             <div className="marquee-content">

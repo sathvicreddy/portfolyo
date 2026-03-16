@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Code2, FolderKanban, GraduationCap, Award, FileBadge, LogOut, Eye, Plus, Pencil, Trash2, MessageSquareShare } from 'lucide-react';
+import { LayoutDashboard, Code2, FolderKanban, GraduationCap, Award, FileBadge, LogOut, Eye, Plus, Pencil, Trash2, MessageSquareShare, User, Home } from 'lucide-react';
 import './AdminDashboard.css';
 
 // Helper to convert Google Drive share links into direct image links
@@ -36,6 +36,16 @@ const AdminDashboard = () => {
       if (res.ok) {
         const data = await res.json();
         setItems(data);
+        if (activeTab === 'hero' || activeTab === 'about') {
+          if (data.length > 0) {
+            setFormData(data[0]);
+            setEditingId(data[0]._id);
+          } else {
+            setFormData({});
+            setEditingId(null);
+          }
+          setShowForm(true);
+        }
       }
     } catch (err) {
       console.error('Failed to fetch items', err);
@@ -44,10 +54,12 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     fetchItems();
-    setFormData({});
-    setEditingId(null);
+    if (activeTab !== 'hero' && activeTab !== 'about') {
+      setFormData({});
+      setEditingId(null);
+      setShowForm(false);
+    }
     setMessage('');
-    setShowForm(false);
   }, [activeTab]);
 
   const handleLogout = () => {
@@ -133,6 +145,83 @@ const AdminDashboard = () => {
 
   const renderFormFields = () => {
     switch(activeTab) {
+      case 'hero':
+        return (
+          <>
+            <h4 style={{marginBottom: '1rem', color: '#00e5ff', borderBottom: '1px solid rgba(0,229,255,0.2)', paddingBottom: '0.5rem'}}>Hero Section Configuration</h4>
+            <div className="form-group">
+              <label>Hero Name *</label>
+              <textarea name="heroName" placeholder="e.g. Satvic\nReddy" value={formData.heroName || ''} onChange={handleInputChange} rows="2" required />
+            </div>
+            <div className="form-row">
+              <div className="form-group">
+                <label>Title 1 *</label>
+                <input type="text" name="heroTitle1" placeholder="e.g. ANDROID" value={formData.heroTitle1 || ''} onChange={handleInputChange} required />
+              </div>
+              <div className="form-group">
+                <label>Subtitle 1</label>
+                <input type="text" name="heroSubtitle1" placeholder="e.g. DEVELOPER" value={formData.heroSubtitle1 || ''} onChange={handleInputChange} />
+              </div>
+            </div>
+            <div className="form-row">
+              <div className="form-group">
+                <label>Title 2 *</label>
+                <input type="text" name="heroTitle2" placeholder="e.g. ML/AI" value={formData.heroTitle2 || ''} onChange={handleInputChange} required />
+              </div>
+              <div className="form-group">
+                <label>Subtitle 2</label>
+                <input type="text" name="heroSubtitle2" placeholder="e.g. ENGINEER" value={formData.heroSubtitle2 || ''} onChange={handleInputChange} />
+              </div>
+            </div>
+            <div className="form-group">
+              <label>Hero Description</label>
+              <textarea name="heroDescription" placeholder="Crafting immersive digital experiences..." value={formData.heroDescription || ''} onChange={handleInputChange} rows="2" />
+            </div>
+          </>
+        );
+      case 'about':
+        return (
+          <>
+            <h4 style={{marginBottom: '1rem', color: '#00e5ff', borderBottom: '1px solid rgba(0,229,255,0.2)', paddingBottom: '0.5rem'}}>About Me Section Configuration</h4>
+            <div className="form-group">
+              <label>Portrait Image URL</label>
+              <input type="text" name="aboutImage" placeholder="Leave empty for default" value={formData.aboutImage || ''} onChange={handleInputChange} />
+            </div>
+            <div className="form-group">
+              <label>About Heading *</label>
+              <input type="text" name="aboutHeading" placeholder="e.g. Passionate about Data & Code" value={formData.aboutHeading || ''} onChange={handleInputChange} required />
+            </div>
+            <div className="form-group">
+              <label>Summary Paragraph 1</label>
+              <textarea name="aboutDescription1" placeholder="I am a Computer Science Engineering student..." value={formData.aboutDescription1 || ''} onChange={handleInputChange} rows="3" />
+            </div>
+            <div className="form-group">
+              <label>Summary Paragraph 2</label>
+              <textarea name="aboutDescription2" placeholder="I focus on problem-solving..." value={formData.aboutDescription2 || ''} onChange={handleInputChange} rows="3" />
+            </div>
+            
+            <div className="form-row">
+              <div className="form-group">
+                <label>Info Grid: Location</label>
+                <input type="text" name="aboutLocation" placeholder="e.g. India" value={formData.aboutLocation || ''} onChange={handleInputChange} />
+              </div>
+              <div className="form-group">
+                <label>Info Grid: Degree</label>
+                <input type="text" name="aboutDegree" placeholder="e.g. B.Tech CSE" value={formData.aboutDegree || ''} onChange={handleInputChange} />
+              </div>
+            </div>
+            <div className="form-row">
+              <div className="form-group">
+                <label>Info Grid: Focus</label>
+                <input type="text" name="aboutFocus" placeholder="e.g. Full-Stack & AI" value={formData.aboutFocus || ''} onChange={handleInputChange} />
+              </div>
+              <div className="form-group">
+                <label>Info Grid: Passion</label>
+                <input type="text" name="aboutPassion" placeholder="e.g. Problem Solving" value={formData.aboutPassion || ''} onChange={handleInputChange} />
+              </div>
+            </div>
+          </>
+        );
       case 'project':
         return (
           <>
@@ -167,17 +256,32 @@ const AdminDashboard = () => {
       case 'achievement':
         return (
           <>
-            <div className="form-group">
-              <label>Achievement Title *</label>
-              <input type="text" name="title" placeholder="e.g. Code-A-Hunt Hackathon" value={formData.title || ''} onChange={handleInputChange} required />
+            <div className="form-row">
+              <div className="form-group">
+                <label>Achievement Title *</label>
+                <input type="text" name="title" placeholder="e.g. Adobe India Hackathon" value={formData.title || ''} onChange={handleInputChange} required />
+              </div>
+              <div className="form-group">
+                <label>Category *</label>
+                <select name="category" value={formData.category || ''} onChange={handleInputChange} required>
+                  <option value="">Select Category</option>
+                  <option value="Hackathon">Hackathon</option>
+                  <option value="Challenge">Challenge</option>
+                  <option value="DSA">DSA</option>
+                  <option value="Competition">Competition</option>
+                  <option value="Award">Award</option>
+                  <option value="Achievement">Achievement</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
             </div>
             <div className="form-group">
-              <label>Description *</label>
-              <textarea name="description" placeholder="Describe the achievement" value={formData.description || ''} onChange={handleInputChange} required />
+              <label>Description</label>
+              <textarea name="description" placeholder="Describe the achievement" value={formData.description || ''} onChange={handleInputChange} />
             </div>
             <div className="form-group">
               <label>Date</label>
-              <input type="text" name="date" placeholder="e.g. Feb '24" value={formData.date || ''} onChange={handleInputChange} />
+              <input type="text" name="date" placeholder="e.g. Mar 2024" value={formData.date || ''} onChange={handleInputChange} />
             </div>
           </>
         );
@@ -288,6 +392,27 @@ const AdminDashboard = () => {
             </div>
           </>
         );
+      case 'experience':
+        return (
+          <>
+            <div className="form-group">
+              <label>Experience Title *</label>
+              <input type="text" name="title" placeholder="e.g. Frontend Developer" value={formData.title || ''} onChange={handleInputChange} required />
+            </div>
+            <div className="form-group">
+              <label>Company *</label>
+              <input type="text" name="company" placeholder="e.g. Google" value={formData.company || ''} onChange={handleInputChange} required />
+            </div>
+            <div className="form-group">
+              <label>Description</label>
+              <textarea name="description" placeholder="Describe the work experience" value={formData.description || ''} onChange={handleInputChange} />
+            </div>
+            <div className="form-group">
+              <label>Date / Duration</label>
+              <input type="text" name="date" placeholder="e.g. Jan '24 - Present" value={formData.date || ''} onChange={handleInputChange} />
+            </div>
+          </>
+        );
       case 'socialpost':
         return (
           <>
@@ -371,14 +496,18 @@ const AdminDashboard = () => {
             )}
           </>
         );
+
       default:
         return null;
     }
   };
 
   const tabConfig = [
+    { key: 'hero', label: 'Hero Section', icon: Home },
+    { key: 'about', label: 'About Me', icon: User },
     { key: 'skill', label: 'Skills', icon: Code2 },
     { key: 'project', label: 'Projects', icon: FolderKanban },
+    { key: 'experience', label: 'Experience', icon: FolderKanban }, // Reusing an icon for now, ideally Briefcase but using available lucide icon
     { key: 'training', label: 'Training', icon: GraduationCap },
     { key: 'certification', label: 'Certificates', icon: FileBadge },
     { key: 'achievement', label: 'Achievements', icon: Award },
@@ -390,8 +519,9 @@ const AdminDashboard = () => {
       case 'project': return ['TITLE', 'TECHNOLOGIES', 'ACTIONS'];
       case 'skill': return ['NAME', 'CATEGORY', 'LEVEL', 'ACTIONS'];
       case 'training': return ['TITLE', 'ORGANIZATION', 'DATE', 'ACTIONS'];
+      case 'experience': return ['TITLE', 'COMPANY', 'DATE', 'ACTIONS'];
       case 'certification': return ['TITLE', 'ISSUER', 'DATE', 'ACTIONS'];
-      case 'achievement': return ['TITLE', 'DATE', 'ACTIONS'];
+      case 'achievement': return ['TITLE', 'CATEGORY', 'DATE', 'ACTIONS'];
       case 'socialpost': return ['AUTHOR', 'PREVIEW', 'ENGAGEMENT', 'ACTIONS'];
       default: return [];
     }
@@ -429,6 +559,14 @@ const AdminDashboard = () => {
             <td>{item.date || '—'}</td>
           </>
         );
+      case 'experience':
+        return (
+          <>
+            <td className="td-title">{item.title}</td>
+            <td>{item.company || '—'}</td>
+            <td>{item.date || '—'}</td>
+          </>
+        );
       case 'certification':
         return (
           <>
@@ -441,6 +579,7 @@ const AdminDashboard = () => {
         return (
           <>
             <td className="td-title">{item.title}</td>
+            <td>{item.category || '—'}</td>
             <td>{item.date || '—'}</td>
           </>
         );
@@ -502,15 +641,23 @@ const AdminDashboard = () => {
         {/* Page Header */}
         <div className="page-header">
           <div>
-            <h1 className="page-title">{tabLabel}</h1>
-            <p className="page-count">{items.length} {items.length === 1 ? 'entry' : 'entries'}</p>
+            <h1 className="page-title">
+              {activeTab === 'hero' ? 'Hero Configuration' : 
+               activeTab === 'about' ? 'About Configuration' : 
+               activeTab.charAt(0).toUpperCase() + activeTab.slice(1) + 's'}
+            </h1>
+            {(activeTab !== 'hero' && activeTab !== 'about') && (
+              <p className="page-count">{items.length} {items.length === 1 ? 'entry' : 'entries'}</p>
+            )}
           </div>
-          <button 
-            className="add-btn" 
-            onClick={() => { setShowForm(!showForm); setEditingId(null); setFormData({}); }}
-          >
-            <Plus size={18} /> {showForm ? 'Close Form' : `Add ${activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}`}
-          </button>
+          {(activeTab !== 'hero' && activeTab !== 'about') && (
+            <button 
+              className="add-btn" 
+              onClick={() => { setShowForm(!showForm); setEditingId(null); setFormData({}); }}
+            >
+              <Plus size={18} /> {showForm ? 'Close Form' : `Add ${activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}`}
+            </button>
+          )}
         </div>
 
         {message && (
@@ -538,36 +685,38 @@ const AdminDashboard = () => {
         )}
 
         {/* Data Table */}
-        <div className="data-table-card">
-          {items.length === 0 ? (
-            <div className="empty-state">
-              <p>No {tabLabel.toLowerCase()} found. Click <strong>"Add {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}"</strong> to create one.</p>
-            </div>
-          ) : (
-            <table className="data-table">
-              <thead>
-                <tr>
-                  {getTableHeaders().map(h => <th key={h}>{h}</th>)}
-                </tr>
-              </thead>
-              <tbody>
-                {items.map(item => (
-                  <tr key={item._id}>
-                    {renderTableRow(item)}
-                    <td className="td-actions">
-                      <button onClick={() => handleEdit(item)} className="action-btn edit" title="Edit">
-                        <Pencil size={16} />
-                      </button>
-                      <button onClick={() => handleDelete(item._id)} className="action-btn delete" title="Delete">
-                        <Trash2 size={16} />
-                      </button>
-                    </td>
+        {(activeTab !== 'hero' && activeTab !== 'about') && (
+          <div className="data-table-card">
+            {items.length === 0 ? (
+              <div className="empty-state">
+                <p>No {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} found. Click <strong>"Add {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}"</strong> to create one.</p>
+              </div>
+            ) : (
+              <table className="data-table">
+                <thead>
+                  <tr>
+                    {getTableHeaders().map(h => <th key={h}>{h}</th>)}
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </div>
+                </thead>
+                <tbody>
+                  {items.map(item => (
+                    <tr key={item._id}>
+                      {renderTableRow(item)}
+                      <td className="td-actions">
+                        <button onClick={() => handleEdit(item)} className="action-btn edit" title="Edit">
+                          <Pencil size={16} />
+                        </button>
+                        <button onClick={() => handleDelete(item._id)} className="action-btn delete" title="Delete">
+                          <Trash2 size={16} />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
+        )}
       </main>
     </div>
   );
