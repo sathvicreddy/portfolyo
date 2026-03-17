@@ -28,7 +28,7 @@ const Navbar = () => {
       transition={{ duration: 0.8, ease: "easeOut" }}
     >
       <div className="nav-logo">
-        <a href="#home">A</a>
+        <a href="#home">S</a>
       </div>
 
       <div className="nav-links">
